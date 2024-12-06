@@ -1,0 +1,21 @@
+﻿{
+  "name": "com.nabilahkishou.scriptable-web-request",
+  "version": "1.0.0",
+  "displayName": "Scriptable Web Request",
+  "description": "Custom web request library with scriptable object approach.",
+  "unity": "2020.1",
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json" : "3.1.0",
+    "nl.jeffreylanters.web-requests": "1.2.0",
+    "com.cysharp.unitask": "2.5.10"
+  },
+  "keywords": [
+    "web",
+    "request",
+    "library"
+  ],
+  "author": {
+    "name": "Septian Nabilah",
+    "email": "nabilahkishou@gmail.com"
+  }
+}

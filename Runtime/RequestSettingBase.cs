@@ -28,11 +28,10 @@ namespace NabilahKishou.ScriptableWebRequest {
 
         public virtual CustomWebRequest CreateRequest() {
             requestBuilder ??= new RequestBuilder().Construct(Url())
-                .WithAuth(needAuth)
                 .WithMethod(method)
                 .WithContentType(contentType)
                 .WithBody(body);
-            return requestBuilder.Build();
+            return requestBuilder.WithAuth(needAuth).Build();
         }
 
         public virtual async UniTask<WebRequestResponse> SendRequest() {

@@ -39,7 +39,8 @@ namespace NabilahKishou.ScriptableWebRequest {
             try {
                 response = await CreateRequest().Send();
             } catch (WebRequestException exception) {
-                Debug.Log ($"Error {exception.httpStatusCode} while fetching {exception.url}");
+                Debug.LogError($"Error {exception.httpStatusCode} while fetching {exception.url}");
+                throw;
             }
             return response;
         }

@@ -1,15 +1,12 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using JeffreyLanters.WebRequests;
 using JeffreyLanters.WebRequests.Core;
 using NabilahKishou.ScriptableWebRequest.Editor;
-using NabilahKishou.ScriptableWebRequest.Runtime;
-using UnityEditor;
 using UnityEngine;
 
 namespace NabilahKishou.ScriptableWebRequest.Runtime {
     public abstract class RequestSettingBase : ScriptableObject {
-        protected const string URL_PREFIX = "https://therapy.digiyata.com/api";
-
         [Header("Basic Settings")] 
         public string endpoint;
         public UrlDirectory directory = UrlDirectory.none;
@@ -22,9 +19,7 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
         protected IRequestBuilder requestBuilder;
 
         public virtual string Url() {
-            return finalUrl = $"{URL_PREFIX}" +
-                              $"{SubUrl(UrlDirectoryExtensions.GetDirectory(directory))}" +
-                              $"{SubUrl(endpoint)}";
+            return finalUrl = endpoint;
         }
 
         public virtual CustomWebRequest CreateRequest() {
@@ -35,10 +30,10 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
             return requestBuilder.WithAuth(needAuth).Build();
         }
 
-        public virtual async UniTask<WebRequestResponse> SendRequest() {
+        public virtual async Task<WebRequestResponse> SendRequest(CancellationToken cToken = default) {
             WebRequestResponse response = null;
             try {
-                response = await CreateRequest().Send();
+                response = await CreateRequest().Send(cToken);
             }
             catch (WebRequestException exception) {
                 Debug.LogError($"Error {exception.httpStatusCode} while fetching {exception.url}");

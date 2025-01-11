@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Text;
-using Cysharp.Threading.Tasks;
+using System.Threading;
+using System.Threading.Tasks;
 using JeffreyLanters.WebRequests;
 using JeffreyLanters.WebRequests.Core;
 using UnityEngine.Networking;
@@ -17,7 +18,7 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
         
         public CustomWebRequest(string url) => this.URL = url;
 
-        public async UniTask<WebRequestResponse> Send() {
+        public async Task<WebRequestResponse> Send(CancellationToken cToken = default) {
             var isCompleted = false;
             var requestHandler = ToWebRequestHandler ();
             
@@ -25,7 +26,9 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
                 SendWebRequestHandler (requestHandler),
                 () => isCompleted = true);
             while (isCompleted == false) {
-                await UniTask.Yield ();
+                if (cToken.IsCancellationRequested)
+                    cToken.ThrowIfCancellationRequested();
+                await Task.Yield ();
             }
             
             if (requestHandler.result != WebRequestHandler.Result.Success)

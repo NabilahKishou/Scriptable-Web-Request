@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NabilahKishou.ScriptableWebRequest {
+namespace NabilahKishou.ScriptableWebRequest.Runtime {
     public enum UrlDirectory {
         none,
         user,

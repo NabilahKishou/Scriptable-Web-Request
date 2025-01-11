@@ -1,22 +1,23 @@
 ﻿using Cysharp.Threading.Tasks;
 using JeffreyLanters.WebRequests;
 using JeffreyLanters.WebRequests.Core;
+using NabilahKishou.ScriptableWebRequest.Editor;
 using NabilahKishou.ScriptableWebRequest.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace NabilahKishou.ScriptableWebRequest {
+namespace NabilahKishou.ScriptableWebRequest.Runtime {
     public abstract class RequestSettingBase : ScriptableObject {
         protected const string URL_PREFIX = "https://therapy.digiyata.com/api";
-        
-        [Header("Basic Settings")]
+
+        [Header("Basic Settings")] 
         public string endpoint;
         public UrlDirectory directory = UrlDirectory.none;
         public RequestMethod method = RequestMethod.Get;
         public ContentType contentType = ContentType.ApplicationJson;
         public bool needAuth = false;
         public object body = null;
-        
+
         [ReadOnly, SerializeField] protected string finalUrl;
         protected IRequestBuilder requestBuilder;
 
@@ -38,13 +39,15 @@ namespace NabilahKishou.ScriptableWebRequest {
             WebRequestResponse response = null;
             try {
                 response = await CreateRequest().Send();
-            } catch (WebRequestException exception) {
+            }
+            catch (WebRequestException exception) {
                 Debug.LogError($"Error {exception.httpStatusCode} while fetching {exception.url}");
                 throw;
             }
+
             return response;
         }
-        
+
         public void SetBody(object body) {
             this.body = body;
             requestBuilder?.WithBody(this.body);
@@ -55,33 +58,7 @@ namespace NabilahKishou.ScriptableWebRequest {
         }
 
         protected string SubUrl(string sub) {
-            return string.IsNullOrEmpty(sub)? "" : "/" + sub;
+            return string.IsNullOrEmpty(sub) ? "" : "/" + sub;
         }
     }
-    
-    #if UNITY_EDITOR
-    public class ReadOnlyAttribute : PropertyAttribute
-    {
-
-    }
-
-    [CustomPropertyDrawer(typeof(ReadOnlyAttribute))]
-    public class ReadOnlyDrawer : PropertyDrawer
-    {
-        public override float GetPropertyHeight(SerializedProperty property,
-            GUIContent label)
-        {
-            return EditorGUI.GetPropertyHeight(property, label, true);
-        }
-        
-        public override void OnGUI(Rect position,
-            SerializedProperty property,
-            GUIContent label)
-        {
-            GUI.enabled = false;
-            EditorGUI.PropertyField(position, property, label, true);
-            GUI.enabled = true;
-        }
-    }
-    #endif
 }

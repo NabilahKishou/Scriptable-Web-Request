@@ -1,9 +1,11 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using JeffreyLanters.WebRequests;
-using JeffreyLanters.WebRequests.Core;
-using NabilahKishou.ScriptableWebRequest.Editor;
 using UnityEngine;
+using JeffreyLanters.WebRequests.Core;
+#if UNITY_EDITOR
+using NabilahKishou.ScriptableWebRequest.Editor;
+#endif
 
 namespace NabilahKishou.ScriptableWebRequest.Runtime {
     public abstract class RequestSettingBase : ScriptableObject {
@@ -15,8 +17,15 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
         public bool needAuth = false;
         public object body = null;
 
-        [ReadOnly, SerializeField] protected string finalUrl;
+        #if UNITY_EDITOR
+        [ReadOnly]
+        #endif
+        [SerializeField] protected string finalUrl;
         protected IRequestBuilder requestBuilder;
+        
+        void OnValidate() {
+            Url();
+        }
 
         public virtual string Url() {
             return finalUrl = endpoint;
@@ -46,10 +55,6 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
         public void SetBody(object body) {
             this.body = body;
             requestBuilder?.WithBody(this.body);
-        }
-
-        void OnValidate() {
-            Url();
         }
 
         protected string SubUrl(string sub) {

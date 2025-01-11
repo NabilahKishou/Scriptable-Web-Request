@@ -1,3 +1,16 @@
 {
-	"name": "com.nabilahkishou.scriptable-web-request.editor"
+    "name": "com.nabilahkishou.scriptable-web-request.editor",
+    "rootNamespace": "",
+    "references": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

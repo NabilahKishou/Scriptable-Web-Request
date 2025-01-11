@@ -5,9 +5,8 @@
   "description": "Custom web request library with scriptable object approach.",
   "unity": "2020.1",
   "dependencies": {
-    "com.unity.nuget.newtonsoft-json" : "3.1.0",
-    "nl.jeffreylanters.web-requests": "1.2.0",
-    "com.cysharp.unitask": "2.5.10"
+    "com.unity.nuget.newtonsoft-json": "3.1.0",
+    "nl.jeffreylanters.web-requests": "git+https://github.com/jeffreylanters/unity-web-requests"
   },
   "keywords": [
     "web",

@@ -11,7 +11,6 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
     public abstract class RequestSettingBase : ScriptableObject {
         [Header("Basic Settings")] 
         public string endpoint;
-        public UrlDirectory directory = UrlDirectory.none;
         public RequestMethod method = RequestMethod.Get;
         public ContentType contentType = ContentType.ApplicationJson;
         public bool needAuth = false;

@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using JeffreyLanters.WebRequests;
 using UnityEngine;
@@ -9,17 +11,19 @@ using NabilahKishou.ScriptableWebRequest.Editor;
 
 namespace NabilahKishou.ScriptableWebRequest.Runtime {
     public abstract class RequestSettingBase : ScriptableObject {
-        [Header("Basic Settings")] 
-        public string endpoint;
-        public RequestMethod method = RequestMethod.Get;
-        public ContentType contentType = ContentType.ApplicationJson;
-        public bool needAuth = false;
-        public object body = null;
-
         #if UNITY_EDITOR
         [ReadOnly]
         #endif
         [SerializeField] protected string finalUrl;
+        
+        [Header("Basic Settings")] 
+        public string endpoint;
+        public RequestMethod method = RequestMethod.Get;
+        public ContentType contentType = ContentType.ApplicationJson;
+        public bool needAuthorization = false;
+        public List<Parameter> queryParameters;
+        public object body = null;
+        
         protected IRequestBuilder requestBuilder;
         
         void OnValidate() {
@@ -27,15 +31,16 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
         }
 
         public virtual string Url() {
-            return finalUrl = endpoint;
+            return finalUrl = AppendQueryToUrl(endpoint, queryParameters);
         }
 
         public virtual CustomWebRequest CreateRequest() {
             requestBuilder ??= new RequestBuilder().Construct(Url())
                 .WithMethod(method)
                 .WithContentType(contentType)
-                .WithBody(body);
-            return requestBuilder.WithAuth(needAuth).Build();
+                .WithBody(body)
+                .WithAuth(needAuthorization);
+            return requestBuilder.Build();
         }
 
         public virtual async Task<WebRequestResponse> SendRequest(CancellationToken cToken = default) {
@@ -44,10 +49,9 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
                 response = await CreateRequest().Send(cToken);
             }
             catch (WebRequestException exception) {
-                Debug.LogError($"Error {exception.httpStatusCode} while fetching {exception.url}");
-                throw;
+                throw new Exception($"Error {exception.httpStatusCode} while fetching {exception.url}", exception);
             }
-
+            
             return response;
         }
 
@@ -58,6 +62,19 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
 
         protected string SubUrl(string sub) {
             return string.IsNullOrEmpty(sub) ? "" : "/" + sub;
+        }
+
+        protected string AppendQueryToUrl(string url, List<Parameter> parameters) {
+            if (queryParameters.Count <= 0) return url;
+
+            var urlBuilder = "";
+            if (!url.Contains("?")) urlBuilder += "?";
+            for (int i = 0; i < parameters.Count; i++) {
+                urlBuilder += $"{parameters[i].key}={parameters[i].value}";
+                if (i < parameters.Count - 1) urlBuilder += "&";
+            }
+
+            return url + urlBuilder;
         }
     }
 }

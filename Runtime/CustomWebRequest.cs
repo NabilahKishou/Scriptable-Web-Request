@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,8 +14,8 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
         public ContentType contentType = ContentType.ApplicationJson;
         public string characterSet = "utf-8";
         public object body = null;
-        public Header[] headers = new Header[0];
-        public QueryParameter[] queryParameters = new QueryParameter[0];
+        public List<Header> headers = new List<Header>();
+        public List<QueryParameter> queryParameters = new List<QueryParameter>();
         
         public CustomWebRequest(string url) => this.URL = url;
 
@@ -43,7 +44,7 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
 
         WebRequestHandler ToWebRequestHandler() {
             var handler = new WebRequestHandler ();
-            handler.url = QueryParameter.AppendManyToUrl (this.URL, this.queryParameters);
+            handler.url = ParameterExtension.AppendQueryToUrl(URL, queryParameters);
             handler.method = this.method.ToString ().ToUpper ();
             
             handler.SetRequestHeader ("X-HTTP-Method-Override", handler.method);

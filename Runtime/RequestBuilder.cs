@@ -6,12 +6,11 @@ using UnityEngine;
 namespace NabilahKishou.ScriptableWebRequest.Runtime {
     public interface IRequestBuilder {
         CustomWebRequest Build();
-        IRequestBuilder Construct(string url);
         IRequestBuilder WithAuth(bool needAuth);
         IRequestBuilder WithMethod(RequestMethod method);
         IRequestBuilder WithContentType(ContentType contentType);
         IRequestBuilder WithBody(object body);
-        IRequestBuilder WithCustomHeaders(Header[] headers);
+        IRequestBuilder WithCustomHeaders(params Header[] headers);
         IRequestBuilder WithQueryParams(params QueryParameter[] queryParameters);
     }
     
@@ -20,15 +19,14 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
         List<Header> _headers = new List<Header>();
         List<QueryParameter> _queryParameters = new List<QueryParameter>();
 
-        public CustomWebRequest Build() {
-            if (_headers.Count > 0) _request.headers = _headers.ToArray();
-            if (_queryParameters.Count > 0) _request.queryParameters = _queryParameters.ToArray();
-            return _request;
+        public RequestBuilder(string url) {
+            _request = new CustomWebRequest(url);
         }
 
-        public IRequestBuilder Construct(string url) {
-            _request = new CustomWebRequest(url);
-            return this;
+        public CustomWebRequest Build() {
+            if (_headers.Count > 0) _request.headers = _headers;
+            if (_queryParameters.Count > 0) _request.queryParameters = _queryParameters;
+            return _request;
         }
 
         public IRequestBuilder WithAuth(bool isNeedAuth) {
@@ -54,7 +52,7 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
             return this;
         }
 
-        public IRequestBuilder WithCustomHeaders(Header[] headers) {
+        public IRequestBuilder WithCustomHeaders(params Header[] headers) {
             _headers.AddRange(headers);
             return this;
         }

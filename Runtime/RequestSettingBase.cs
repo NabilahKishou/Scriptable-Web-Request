@@ -31,11 +31,11 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
         }
 
         public virtual string Url() {
-            return finalUrl = AppendQueryToUrl(endpoint, queryParameters);
+            return finalUrl = ParameterExtension.AppendQueryToUrl(endpoint, queryParameters);
         }
 
         public virtual CustomWebRequest CreateRequest() {
-            requestBuilder ??= new RequestBuilder().Construct(Url())
+            requestBuilder ??= new RequestBuilder(Url())
                 .WithMethod(method)
                 .WithContentType(contentType)
                 .WithBody(body)
@@ -62,19 +62,6 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
 
         protected string SubUrl(string sub) {
             return string.IsNullOrEmpty(sub) ? "" : "/" + sub;
-        }
-
-        protected string AppendQueryToUrl(string url, List<Parameter> parameters) {
-            if (queryParameters.Count <= 0) return url;
-
-            var urlBuilder = "";
-            if (!url.Contains("?")) urlBuilder += "?";
-            for (int i = 0; i < parameters.Count; i++) {
-                urlBuilder += $"{parameters[i].key}={parameters[i].value}";
-                if (i < parameters.Count - 1) urlBuilder += "&";
-            }
-
-            return url + urlBuilder;
         }
     }
 }

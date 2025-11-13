@@ -1,5 +1,4 @@
 ﻿using JeffreyLanters.WebRequests;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace NabilahKishou.ScriptableWebRequest.Runtime {
@@ -43,7 +42,7 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
         }
 
         public IRequestBuilder WithBody(object body) {
-            _request.body = body is JObject ? body : JsonUtility.ToJson(body);
+            _request.body = body;
             return this;
         }
 

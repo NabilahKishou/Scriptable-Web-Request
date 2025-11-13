@@ -24,8 +24,6 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
         public List<Parameter> queryParameters;
         public object body = null;
         
-        protected IRequestBuilder requestBuilder;
-        
         void OnValidate() {
             Url();
         }
@@ -35,12 +33,12 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
         }
 
         public virtual CustomWebRequest CreateRequest() {
-            requestBuilder ??= new RequestBuilder(Url())
+            return new RequestBuilder(Url())
                 .WithMethod(method)
                 .WithContentType(contentType)
                 .WithBody(body)
-                .WithAuth(needAuthorization);
-            return requestBuilder.Build();
+                .WithAuth(needAuthorization)
+                .Build();
         }
 
         public virtual async Task<WebRequestResponse> SendRequest(CancellationToken cToken = default) {
@@ -57,7 +55,6 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
 
         public void SetBody(object body) {
             this.body = body;
-            requestBuilder?.WithBody(this.body);
         }
 
         protected string SubUrl(string sub) {

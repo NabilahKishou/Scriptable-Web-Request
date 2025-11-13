@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using JeffreyLanters.WebRequests;
 using JeffreyLanters.WebRequests.Core;
+using Newtonsoft.Json;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace NabilahKishou.ScriptableWebRequest.Runtime {
@@ -31,11 +33,12 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
                     cToken.ThrowIfCancellationRequested();
                 await Task.Yield ();
             }
+
+            if (requestHandler.result == WebRequestHandler.Result.Success)
+                return new WebRequestResponse(requestHandler);
             
-            if (requestHandler.result != WebRequestHandler.Result.Success)
-                throw new WebRequestException (requestHandler);
-            
-            return new WebRequestResponse (requestHandler);
+            Debug.LogError($"Failed URL Request: {URL}\nError: {requestHandler.downloadHandler.text}");
+            throw new WebRequestException (requestHandler);
         }
 
         IEnumerator SendWebRequestHandler(WebRequestHandler requestHandler) {
@@ -45,16 +48,16 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
         WebRequestHandler ToWebRequestHandler() {
             var handler = new WebRequestHandler ();
             handler.url = ParameterExtension.AppendQueryToUrl(URL, queryParameters);
-            handler.method = this.method.ToString ().ToUpper ();
+            handler.method = method.ToString ().ToUpper ();
             
             handler.SetRequestHeader ("X-HTTP-Method-Override", handler.method);
-            foreach (var header in this.headers) {
+            foreach (var header in headers) {
                 handler.SetRequestHeader (header.name, header.value);
             }
             
-            if ((this.method == RequestMethod.Post || this.method == RequestMethod.Put) 
-                && this.body != null) {
-                var encodedBody = Encoding.ASCII.GetBytes (this.body.ToString ());
+            if (method is RequestMethod.Post or RequestMethod.Put 
+                && body != null) {
+                var encodedBody = Encoding.ASCII.GetBytes (JsonConvert.SerializeObject(body));
                 var type = this.contentType.Stringify ();
                 type += $"; charset={this.characterSet}";
                 

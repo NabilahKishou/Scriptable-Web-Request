@@ -14,30 +14,35 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
         #if UNITY_EDITOR
         [ReadOnly]
         #endif
-        [SerializeField] protected string finalUrl;
+        [SerializeField] protected string _finalUrl;
         
         [Header("Basic Settings")] 
-        public string endpoint;
-        public RequestMethod method = RequestMethod.Get;
-        public ContentType contentType = ContentType.ApplicationJson;
-        public bool needAuthorization = false;
-        public List<Parameter> queryParameters;
-        public object body = null;
+        [SerializeField] protected string _endpoint;
+        [SerializeField] protected RequestMethod _method = RequestMethod.Get;
+        [SerializeField] protected ContentType _contentType = ContentType.ApplicationJson;
+        [SerializeField] protected bool _needAuthorization;
+        [SerializeField] protected List<Parameter> _queryParameters;
+        protected object requestBody;
         
-        void OnValidate() {
-            Url();
+        public string Endpoint {
+            get => _endpoint;
+            set => _endpoint = value;
         }
-
-        public virtual string Url() {
-            return finalUrl = ParameterExtension.AppendQueryToUrl(endpoint, queryParameters);
+        public object Body {
+            get => requestBody;
+            set => requestBody = value;
         }
+        
+        void OnValidate() => Url();
 
+        public virtual string Url() => _finalUrl = ParameterExtension.AppendQueryToUrl(_endpoint, _queryParameters);
+        
         public virtual CustomWebRequest CreateRequest() {
             return new RequestBuilder(Url())
-                .WithMethod(method)
-                .WithContentType(contentType)
-                .WithBody(body)
-                .WithAuth(needAuthorization)
+                .WithMethod(_method)
+                .WithContentType(_contentType)
+                .WithBody(requestBody)
+                .WithAuth(_needAuthorization)
                 .Build();
         }
 
@@ -51,14 +56,6 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
             }
             
             return response;
-        }
-
-        public void SetBody(object body) {
-            this.body = body;
-        }
-
-        protected string SubUrl(string sub) {
-            return string.IsNullOrEmpty(sub) ? "" : "/" + sub;
         }
     }
 }

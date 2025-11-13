@@ -4,7 +4,7 @@ using UnityEngine;
 namespace NabilahKishou.ScriptableWebRequest.Runtime {
     public interface IRequestBuilder {
         CustomWebRequest Build();
-        IRequestBuilder WithAuth(bool needAuth);
+        IRequestBuilder WithAuth(bool needAuth, string token = "");
         IRequestBuilder WithMethod(RequestMethod method);
         IRequestBuilder WithContentType(ContentType contentType);
         IRequestBuilder WithBody(object body);
@@ -13,7 +13,7 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
     }
     
     public class RequestBuilder : IRequestBuilder {
-        CustomWebRequest _request;
+        protected CustomWebRequest _request;
 
         public RequestBuilder(string url) {
             _request = new CustomWebRequest(url);
@@ -23,14 +23,13 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
             return _request;
         }
 
-        public IRequestBuilder WithAuth(bool isNeedAuth) {
-            if (!isNeedAuth) return this;
-            // var token = CredentialsPrefs.GetData(CredentialsDirectory.BEARER_TOKEN);
-			var token = PlayerPrefs.GetString("bearer_token");
-            _request.headers.Add(new Header("Authorization", $"Bearer {token}"));
+        public virtual IRequestBuilder WithAuth(bool needAuth, string token = "") {
+            if (!needAuth) return this;
+            var bearerToken = string.IsNullOrEmpty(token) ? PlayerPrefs.GetString("bearer_token") : token;
+            _request.headers.Add(new Header("Authorization", $"Bearer {bearerToken}"));
             return this;
         }
-        
+
         public IRequestBuilder WithMethod(RequestMethod method) {
             _request.method = method;
             return this;

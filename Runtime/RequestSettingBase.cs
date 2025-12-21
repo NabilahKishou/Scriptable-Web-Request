@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using JeffreyLanters.WebRequests;
 using UnityEngine;
 using JeffreyLanters.WebRequests.Core;
@@ -46,13 +46,18 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
                 .Build();
         }
 
-        public virtual async Task<WebRequestResponse> SendRequest(CancellationToken cToken = default) {
+        public virtual async UniTask<WebRequestResponse> SendRequest(CancellationToken cToken = default) {
             WebRequestResponse response = null;
             try {
                 response = await CreateRequest().Send(cToken);
             }
             catch (WebRequestException exception) {
-                throw new Exception($"Error {exception.httpStatusCode} while fetching {exception.url}", exception);
+                Debug.LogError($"Error {exception.httpStatusCode} while fetching {exception.url}\n {exception.rawResponseData}");
+                throw;
+            }
+            catch (Exception e) {
+                Debug.LogError($"An unexpected error occurred: {e.Message}");
+                throw;
             }
             
             return response;

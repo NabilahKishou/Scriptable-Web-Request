@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using JeffreyLanters.WebRequests;
 using JeffreyLanters.WebRequests.Core;
 using Newtonsoft.Json;
@@ -21,7 +21,7 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
         
         public CustomWebRequest(string url) => this.URL = url;
 
-        public async Task<WebRequestResponse> Send(CancellationToken cToken = default) {
+        public async UniTask<WebRequestResponse> Send(CancellationToken cToken = default) {
             var isCompleted = false;
             var requestHandler = ToWebRequestHandler ();
             
@@ -31,14 +31,15 @@ namespace NabilahKishou.ScriptableWebRequest.Runtime {
             while (isCompleted == false) {
                 if (cToken.IsCancellationRequested)
                     cToken.ThrowIfCancellationRequested();
-                await Task.Yield ();
+                await UniTask.Yield ();
             }
 
             if (requestHandler.result == WebRequestHandler.Result.Success)
                 return new WebRequestResponse(requestHandler);
-            
-            Debug.LogError($"Failed URL Request: {URL}\nError: {requestHandler.downloadHandler.text}");
-            throw new WebRequestException (requestHandler);
+
+            var requestExc = new WebRequestException(requestHandler);
+            Debug.LogError(requestExc);
+            throw requestExc;
         }
 
         IEnumerator SendWebRequestHandler(WebRequestHandler requestHandler) {

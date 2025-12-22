@@ -6,8 +6,8 @@
   "unity": "2020.1",
   "dependencies": {
     "com.unity.nuget.newtonsoft-json": "3.1.0",
-    "nl.jeffreylanters.web-requests": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
-    "com.cysharp.unitask": "git+https://github.com/jeffreylanters/unity-web-requests"
+    "nl.jeffreylanters.web-requests": "git+https://github.com/jeffreylanters/unity-web-requests",
+    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask"
   },
   "keywords": [
     "web",
